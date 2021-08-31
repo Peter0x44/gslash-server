@@ -1,18 +1,61 @@
-# gslash
+# gslash-server
 
-Server-side stuff for Geometry Slash
+Server-side stuff for [Geometry Slash](https://github.com/peter0x44/geometryslash.git)
 
-## Installation
+**NOTE**: This project is not complete.
 
-TODO: Write installation instructions here
+## Setting up
+
+### Prerequisites
+
+* Git (duh)
+* Crystal ([see here](https://crystal-lang.org/install/))
+* PostgreSQL
+
+### Building
+
+For a local machine, building would be done like this:
+
+```bash
+git clone https://github.com/2secslater/gslash-server.git && cd gslash-server
+shards install
+crystal build src/gslash.cr --release
+```
+
+For cross-compiling, [see here](https://crystal-lang.org/reference/syntax_and_semantics/cross-compilation.html).
+
+### Configuring
+
+#### PostgreSQL
+
+1. Create a user (e.g. `gslash`) with password via standard procedure
+1. Create a database (e.g. `gslash`) with the user you created as the owner.
+
+#### File
+
+Create the file `/etc/gslash.yml` and open it in a text editor. This is where you'll be setting your PostgreSQL connection details.
+Insert the following and replace values where required:
+
+```yaml
+db:
+  host: localhost
+  port: 5432
+  user: gslash
+  password: yourpassword
+  db: gslash
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+Simply run the binary wherever you built it.
 
-## Development
+```bash
+./gslash
+```
 
-TODO: Write development instructions here
+* Currently, the server listens on HTTP port 3000.
+* GET request `/top` to receive the top 50 scores in CSV form.
+* POST request `/submit` with `username` (string) and `score` (UInt32) in your POST body.
 
 ## Contributing
 
