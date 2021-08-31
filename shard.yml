@@ -1,0 +1,19 @@
+name: gslash
+version: 0.1.0
+
+authors:
+  - Andrew <twosecslater@snopyta.org>
+
+dependencies:
+  pg:
+    github: will/crystal-pg
+  kemal:
+    github: kemalcr/kemal
+
+targets:
+  gslash:
+    main: src/gslash.cr
+
+crystal: 1.1.0
+
+license: AGPLv3
