@@ -14,7 +14,7 @@ Server-side stuff for [Geometry Slash](https://github.com/peter0x44/geometryslas
 
 ### Building
 
-For a local machine, building would be done like this:
+Clone the repository, install the shards and build:
 
 ```bash
 git clone https://github.com/2secslater/gslash-server.git && cd gslash-server
@@ -29,7 +29,7 @@ For cross-compiling, [see here](https://crystal-lang.org/reference/syntax_and_se
 #### PostgreSQL
 
 1. Create a user (e.g. `gslash`) with password via standard procedure
-1. Create a database (e.g. `gslash`) with the user you created as the owner.
+1. Create a database (e.g. `gslash`) with the user you created as the owner
 
 #### File
 

@@ -7,9 +7,10 @@ require "yaml"
 config = YAML.parse(File.read("/etc/gslash.yml"))
 
 db = DB.open URI.new("postgres", host: config["db"]["host"].as_s,
-                     port: config["db"]["port"].as_i,
-                     user: config["db"]["user"].as_s,
-                     password: config["db"]["password"].as_s)
+  port: config["db"]["port"].as_i,
+  user: config["db"]["user"].as_s,
+  password: config["db"]["password"].as_s,
+  path: config["db"]["db"].as_s)
 
 post "/submit" do |env|
   username = env.params.body["username"].as(String)
