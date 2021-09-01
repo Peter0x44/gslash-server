@@ -10,7 +10,7 @@ Server-side stuff for [Geometry Slash](https://github.com/peter0x44/geometryslas
 
 * Git (duh)
 * Crystal ([see here](https://crystal-lang.org/install/))
-* PostgreSQL
+* SQLite3
 
 ### Building
 
@@ -18,32 +18,11 @@ Clone the repository, install the shards and build:
 
 ```bash
 git clone https://github.com/2secslater/gslash-server.git && cd gslash-server
-shards install
-crystal build src/gslash.cr --release
+shards build --production
 ```
 
-For cross-compiling, [see here](https://crystal-lang.org/reference/syntax_and_semantics/cross-compilation.html).
-
-### Configuring
-
-#### PostgreSQL
-
-1. Create a user (e.g. `gslash`) with password via standard procedure
-1. Create a database (e.g. `gslash`) with the user you created as the owner
-
-#### File
-
-Create the file `/etc/gslash.yml` and open it in a text editor. This is where you'll be setting your PostgreSQL connection details.
-Insert the following and replace values where required:
-
-```yaml
-db:
-  host: localhost
-  port: 5432
-  user: gslash
-  password: yourpassword
-  db: gslash
-```
+* Optionally, you can append `--release` to the `shards build` command for optimised binaries at the expense of build time.
+* For cross-compiling, [see here](https://crystal-lang.org/reference/syntax_and_semantics/cross-compilation.html).
 
 ## Usage
 

@@ -1,20 +1,46 @@
+# gslash-server: Server-side portion for Geometry Slash
+# Copyright (C) 2021 Andrew Pirie <twosecslater@snopyta.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 require "db"
-require "pg"
+require "sqlite3"
 require "kemal"
 require "csv"
-require "yaml"
 
-config = YAML.parse(File.read("/etc/gslash.yml"))
+Log.setup_from_env
 
-db = DB.open URI.new("postgres", host: config["db"]["host"].as_s,
-  port: config["db"]["port"].as_i,
-  user: config["db"]["user"].as_s,
-  password: config["db"]["password"].as_s,
-  path: config["db"]["db"].as_s)
+db = DB.open URI.new("sqlite3", path: "./gslash.db")
+
+# Check if tables exist, and if not, create them
+["players", "scores"].each do |table|
+  begin
+    db.exec "SELECT * FROM #{table} LIMIT 0"
+  rescue ex
+    db.exec File.read("schema/#{table}.sql")
+    Log.info { "created table #{table}" }
+  end
+end
+
+before_all do |env|
+  env.response.headers["Source"] = "https://github.com/2secslater/gslash-server.git"
+end
 
 post "/submit" do |env|
   username = env.params.body["username"].as(String)
   score = env.params.body["score"].to_u32
+  Log.info { "Received score #{score} for #{username}" }
   env.response.status_code = 200
 end
 
@@ -30,5 +56,6 @@ get "/top" do |env|
   result
 end
 
+serve_static false
 Kemal.config.powered_by_header = false
 Kemal.run

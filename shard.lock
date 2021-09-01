@@ -16,11 +16,11 @@ shards:
     git: https://github.com/jeromegn/kilt.git
     version: 0.4.1
 
-  pg:
-    git: https://github.com/will/crystal-pg.git
-    version: 0.24.0
-
   radix:
     git: https://github.com/luislavena/radix.git
     version: 0.4.1
+
+  sqlite3:
+    git: https://github.com/crystal-lang/crystal-sqlite3.git
+    version: 0.18.0
 
