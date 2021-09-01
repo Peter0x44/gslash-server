@@ -44,7 +44,7 @@ post "/submit" do |env|
     env.response.status_code = 400
     next
   end
-  score = env.params.body["score"].to_i
+  score = env.params.body["score"].to_u32
   # get uid for username, probably a better way to do this
   begin
     uid = db.query_one("SELECT uid FROM players WHERE uname=(?)", username, as: {Int32})
@@ -53,7 +53,7 @@ post "/submit" do |env|
   ensure
     uid ||= db.query_one("SELECT uid FROM players WHERE uname=(?)", username, as: {Int32})
   end
-  db.exec "INSERT INTO scores VALUES (NULL, ?, ?)", score, uid
+  db.exec "INSERT INTO scores VALUES (NULL, ?, ?)", score.to_s, uid # converting score to string because sqlite and uint32
   env.response.status_code = 200
 end
 
