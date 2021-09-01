@@ -32,7 +32,8 @@ Simply run the binary wherever you built it.
 ./gslash
 ```
 
-* Currently, the server listens on HTTP port 3000.
+Run `./gslash --help` for configuring the interface, port and SSL/TLS key/cert if needed.
+
 * GET request `/top` to receive the top 50 scores in CSV form.
 * POST request `/submit` with `username` (string) and `score` (UInt32) in your POST body.
 
