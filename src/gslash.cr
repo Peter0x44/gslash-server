@@ -27,7 +27,7 @@ db = DB.open URI.new("sqlite3", path: "./gslash.db")
 ["players", "scores"].each do |table|
   begin
     db.exec "SELECT * FROM #{table} LIMIT 0"
-  rescue ex
+  rescue
     db.exec File.read("schema/#{table}.sql")
     Log.info { "created table #{table}" }
   end
@@ -39,8 +39,21 @@ end
 
 post "/submit" do |env|
   username = env.params.body["username"].as(String)
-  score = env.params.body["score"].to_u32
-  Log.info { "Received score #{score} for #{username}" }
+  # sqlite doesn't enforce this limit
+  if username.size > 16
+    env.response.status_code = 400
+    next
+  end
+  score = env.params.body["score"].to_i
+  # get uid for username, probably a better way to do this
+  begin
+    uid = db.query_one("SELECT uid FROM players WHERE uname=(?)", username, as: {Int32})
+  rescue
+    db.exec "INSERT INTO players VALUES (NULL, ?)", username
+  ensure
+    uid ||= db.query_one("SELECT uid FROM players WHERE uname=(?)", username, as: {Int32})
+  end
+  db.exec "INSERT INTO scores VALUES (NULL, ?, ?)", score, uid
   env.response.status_code = 200
 end
 

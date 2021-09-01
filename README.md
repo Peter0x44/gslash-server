@@ -29,10 +29,10 @@ shards build --production
 Simply run the binary wherever you built it.
 
 ```bash
-./gslash
+./bin/gslash
 ```
 
-Run `./gslash --help` for configuring the interface, port and SSL/TLS key/cert if needed.
+Run `./bin/gslash --help` for configuring the interface, port and SSL/TLS key/cert if needed.
 
 * GET request `/top` to receive the top 50 scores in CSV form.
 * POST request `/submit` with `username` (string) and `score` (UInt32) in your POST body.
