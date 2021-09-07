@@ -39,8 +39,9 @@ end
 
 post "/submit" do |env|
   username = env.params.body["username"].as(String)
-  # sqlite doesn't enforce this limit
-  if username.size > 16
+  # sqlite doesn't enforce character limit
+  # we block commas to keep CSV client-side code simple
+  if username.size > 16 || username.includes?(',')
     env.response.status_code = 400
     next
   end
