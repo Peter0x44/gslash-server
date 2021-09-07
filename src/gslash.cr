@@ -21,7 +21,7 @@ require "csv"
 
 Log.setup_from_env
 
-db = DB.open URI.new("sqlite3", path: "./gslash.db")
+db = DB.open URI.new("sqlite3", path: "./gslash.db", query: "foreign_keys=on")
 
 # Check if tables exist, and if not, create them
 ["players", "scores"].each do |table|
