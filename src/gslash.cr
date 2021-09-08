@@ -66,7 +66,8 @@ get "/top" do |env|
   env.response.headers["Content-Type"] = "text/csv"
   player = env.params.query["uname"]?
   if player
-    result = db.query_one("SELECT score FROM scores WHERE player=(?) ORDER BY score DESC LIMIT 1", get_uid(db, player), as: {Int64}).to_s
+    score = db.query_one("SELECT score FROM scores WHERE player=(?) ORDER BY score DESC LIMIT 1", get_uid(db, player), as: {Int64})
+    result = "#{player},#{score}"
   else
     result = CSV.build do |csv|
       db.query "SELECT players.uname, score FROM scores LEFT JOIN players ON scores.player = players.uid ORDER BY score DESC LIMIT 50" do |row|
