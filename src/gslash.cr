@@ -23,6 +23,10 @@ Log.setup_from_env
 
 db = DB.open URI.new("sqlite3", path: "./gslash.db", query: "foreign_keys=on")
 
+def get_uid(db : DB::Database, uname : String) : Int32
+  db.query_one("SELECT uid FROM players WHERE uname=(?)", uname, as: {Int32})
+end
+
 # Check if tables exist, and if not, create them
 ["players", "scores"].each do |table|
   begin
@@ -48,11 +52,11 @@ post "/submit" do |env|
   score = env.params.body["score"].to_u32
   # get uid for username, probably a better way to do this
   begin
-    uid = db.query_one("SELECT uid FROM players WHERE uname=(?)", username, as: {Int32})
+    uid = get_uid db, username
   rescue
     db.exec "INSERT INTO players VALUES (NULL, ?)", username
   ensure
-    uid ||= db.query_one("SELECT uid FROM players WHERE uname=(?)", username, as: {Int32})
+    uid ||= get_uid db, username
   end
   db.exec "INSERT INTO scores VALUES (NULL, ?, ?)", score.to_s, uid # converting score to string because sqlite and uint32
   env.response.status_code = 200
@@ -60,11 +64,16 @@ end
 
 get "/top" do |env|
   env.response.headers["Content-Type"] = "text/csv"
-  result = CSV.build do |csv|
-    i = 1
-    while i <= 50
-      csv.row "Test Player #{i}", 4294967295_u32
-      i += 1
+  player = env.params.query["uname"]?
+  if player
+    result = db.query_one("SELECT score FROM scores WHERE player=(?) ORDER BY score DESC LIMIT 1", get_uid(db, player), as: {Int64}).to_s
+  else
+    result = CSV.build do |csv|
+      db.query "SELECT players.uname, score FROM scores LEFT JOIN players ON scores.player = players.uid ORDER BY score DESC LIMIT 50" do |row|
+        row.each do
+          csv.row row.read(String), row.read(Int64) # sqlite returns int64
+        end
+      end
     end
   end
   result
