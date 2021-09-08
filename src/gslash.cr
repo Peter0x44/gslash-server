@@ -73,7 +73,7 @@ get "/top" do |env|
     count = db.query_one("SELECT COUNT(*) FROM scores", as: {Int64}).to_s
     result = CSV.build do |csv|
       csv.row "count", count
-      db.query "SELECT players.uname, score FROM scores LEFT JOIN players ON scores.player = players.uid WHERE scores.uid >= (?) ORDER BY score DESC LIMIT 50", from.to_i32 do |row|
+      db.query "SELECT players.uname, score FROM scores LEFT JOIN players ON scores.player = players.uid ORDER BY score DESC LIMIT 50 OFFSET (?)", from.to_i32 do |row|
         row.each do
           csv.row row.read(String), row.read(Int64) # sqlite returns int64
         end
