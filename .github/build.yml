@@ -1,0 +1,22 @@
+name: Build and Push to GitHub Container Registry
+
+on:
+  push:
+    branches:
+      - master
+      
+Jobs:
+  Build-and-push-to-ghcr:
+    runs-on: ubuntu-latest
+    if: "!(contains(github.event.head_commit.message, '[skip ci]') || contains(github.event.head_commit.message, '[skip build]'))"
+
+    steps:
+      - uses: actions/checkout@v2 # Checking out the repo
+
+      - name: Build and Publish head Docker image to GitHub Container Registry
+        uses: VaultVulp/gp-docker-action@1.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Provide GITHUB_TOKEN to login into the GitHub Packages
+          image-name: gslashserver # Provide Docker image name
+          image-tag: latest # Provide Docker image tag
+          extract-git-tag: true
