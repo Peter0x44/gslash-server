@@ -1,10 +1,32 @@
 # gslash-server
 
-Server-side stuff for [Geometry Slash](https://github.com/peter0x44/geometryslash.git)
+Server-side code for [Geometry Slash](https://github.com/peter0x44/geometryslash.git)
 
 **NOTE**: This project is not complete.
 
-## Setting up
+## Setting up using Docker (recommended for production servers)
+
+You can either pull the image from the container registry (coming soon), or build the image yourself as follows:
+
+### Prerequisites
+* Docker (well, obviously)
+* Git (only when building yourself) 
+
+### Building with Docker on your own
+
+Clone the repository and build the Docker image:
+```bash
+git clone https://github.com/2secslater/gslash-server.git && cd gslash-server
+docker build -t gslashserver:latest .
+```
+### Usage
+Once you have pulled the image from the registry or built it yourself you can run it as such:
+```bash
+docker run -d -p YOUR_PORT:3000 gslashserver:latest
+```
+Where `YOUR_PORT` is the port that you will be able to access your server from, make sure to forward it if you want public access.
+
+## Setting up on your system (recommended for development or LAN hosting)
 
 ### Prerequisites
 
