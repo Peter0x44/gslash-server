@@ -6,11 +6,11 @@ Server-side code for [Geometry Slash](https://github.com/peter0x44/geometryslash
 
 ## Setting up using Docker (recommended for production servers)
 
-You can either pull the image from the container registry (coming soon), or build the image yourself as follows:
-
 ### Prerequisites
 * Docker (well, obviously)
 * Git (only when building yourself) 
+
+You can either pull the image from the container registry using `docker pull ghcr.io/2secslater/gslash-server:latest`, or build the image yourself as follows:
 
 ### Building with Docker on your own
 
@@ -22,7 +22,7 @@ docker build -t gslashserver:latest .
 ### Usage
 Once you have pulled the image from the registry or built it yourself you can run it as such:
 ```bash
-docker run -d -p YOUR_PORT:3000 gslashserver:latest
+docker run -d -p YOUR_PORT:3000 gslash-server:latest
 ```
 Where `YOUR_PORT` is the port that you will be able to access your server from, make sure to forward it if you want public access.
 
