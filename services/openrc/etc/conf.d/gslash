@@ -1,0 +1,9 @@
+# https://github.com/crystal-lang/crystal-env/blob/7e795f7/src/crystal-env/core.cr#L21
+env="production"
+
+# https://github.com/crystal-lang/crystal/blob/24486c7/src/log/log.cr#L36
+log_level="ERROR"
+
+# additional arguments to pass to the gslash executable
+# run ./bin/gslash --help to see what arguments you can pass
+add_args="-p 3000"
