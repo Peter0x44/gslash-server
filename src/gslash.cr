@@ -19,7 +19,7 @@ require "sqlite3"
 require "kemal"
 require "csv"
 
-db_path, schema_path = "./gslash.db", "./schema"
+db_path, schema_path = "./db/gslash.db", "./schema"
 
 Log.setup_from_env
 

@@ -2,6 +2,8 @@
 
 Server-side code for [Geometry Slash](https://github.com/peter0x44/geometryslash.git)
 
+**NOTE**: This project is not complete.
+
 ## Setting up traditionally
 
 ### Prerequisites
@@ -34,9 +36,6 @@ Simply run the binary wherever you built it.
 Run `./bin/gslash --help` for configuring the interface, port and SSL/TLS key/cert if needed.
 
 * GET request `/top` to receive the top 50 scores in CSV form.
-  * First row indicates the count of scores being stored in the database. Used for paging on the client.
-  * Using with parameter `player` with value (String) will return single top score for the player specified.
-  * Using with parameter `from` with value (Int32) will return top 50 scores with the value being the offset. Used for paging on the client.
 * POST request `/submit` with `username` (string) and `score` (UInt32) in your POST body.
 
 ### Setting up service
@@ -70,14 +69,22 @@ You can either pull the image from the container registry using `docker pull ghc
 Clone the repository and build the Docker image:
 ```bash
 git clone https://github.com/2secslater/gslash-server.git && cd gslash-server
-docker build -t gslashserver:latest .
+docker build -t gslash-server:latest .
 ```
 ### Usage
 Once you have pulled the image from the registry or built it yourself you can run it as such:
+
+First, create a volume so that the database persists across container updates or resets:
 ```bash
-docker run -d -p YOUR_PORT:3000 gslash-server:latest
+docker volume create gslashdb
 ```
-Where `YOUR_PORT` is the port that you will be able to access your server from, make sure to forward it if you want public access.
+
+Then, run the container, mounting the volume in the /gslash/db folder inside the container:
+```bash
+docker run -d -p YOUR_PORT:3000 -v gslashdb:/gslash/db gslash-server:latest
+```
+Where `YOUR_PORT` is the port that you will be able to access your server from, make sure to forward it if you want public access..
+
 
 ## Setting up reverse proxy (optional)
 
