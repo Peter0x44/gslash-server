@@ -19,9 +19,22 @@ require "sqlite3"
 require "kemal"
 require "csv"
 
+db_path, schema_path = "./gslash.db", "./schema"
+
 Log.setup_from_env
 
-db = DB.open URI.new("sqlite3", path: "./gslash.db", query: "foreign_keys=on")
+Kemal.config.extra_options do |opts|
+  opts.on "-d PATH", "--database PATH", "Path to sqlite database (defaults to '#{db_path}')" do |path|
+    db_path = path
+  end
+  opts.on "-c PATH", "--schema PATH", "Path to database schemas (defaults to '#{schema_path}')" do |path|
+    schema_path = path
+  end
+end
+
+Kemal::CLI.new ARGV
+
+db = DB.open URI.new("sqlite3", path: db_path, query: "foreign_keys=on")
 
 def get_uid(db : DB::Database, uname : String) : Int32
   db.query_one("SELECT uid FROM players WHERE uname=(?)", uname, as: {Int32})
@@ -32,7 +45,7 @@ end
   begin
     db.exec "SELECT * FROM #{table} LIMIT 0"
   rescue
-    db.exec File.read("schema/#{table}.sql")
+    db.exec File.read("#{schema_path}/#{table}.sql")
     Log.info { "created table #{table}" }
   end
 end
@@ -70,10 +83,10 @@ get "/top" do |env|
     result = "#{player},#{score}"
   else
     from = env.params.query["from"]? || 0
-    count = db.query_one("SELECT COUNT(*) FROM scores", as: {Int64}).to_s
+    count = db.query_one("SELECT COUNT (*) FROM (SELECT player, MAX (score) FROM scores GROUP BY player)", as: {Int64}).to_s
     result = CSV.build do |csv|
       csv.row "count", count
-      db.query "SELECT players.uname, score FROM scores LEFT JOIN players ON scores.player = players.uid ORDER BY score DESC LIMIT 50 OFFSET (?)", from.to_i32 do |row|
+      db.query "SELECT players.uname, MAX (score) FROM scores LEFT JOIN players ON scores.player = players.uid GROUP BY player ORDER BY score DESC LIMIT 50 OFFSET (?)", from.to_i32 do |row|
         row.each do
           csv.row row.read(String), row.read(Int64) # sqlite returns int64
         end
@@ -83,6 +96,9 @@ get "/top" do |env|
   result
 end
 
-serve_static false
-Kemal.config.powered_by_header = false
+Kemal.config do |cfg|
+  cfg.powered_by_header = false
+  cfg.serve_static = false
+  cfg.app_name = "gslash"
+end
 Kemal.run

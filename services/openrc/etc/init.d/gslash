@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+name="gslash"
+description="Geometry Slash Server"
+
+supervisor="supervise-daemon"
+command="/var/lib/gslash/gslash-server/bin/gslash"
+command_args="${add_args}"
+command_user="gslash:gslash"
+command_background=true
+output_log="/var/log/${RC_SVCNAME}/output.log"
+error_log="/var/log/${RC_SVCNAME}/error.log"
+directory="/var/lib/gslash/gslash-server"
+pidfile="/var/run/${RC_SVCNAME}.pid"
+
+export CRYSTAL_ENV="${env}"
+export KEMAL_ENV="${CRYSTAL_ENV}"
+export LOG_LEVEL="${log_level}"
+
+depend() {
+	need net
+	use logger
+	after firewall
+}
