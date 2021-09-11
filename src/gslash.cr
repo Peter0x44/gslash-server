@@ -19,9 +19,22 @@ require "sqlite3"
 require "kemal"
 require "csv"
 
+db_path, schema_path = "./gslash.db", "./schema"
+
 Log.setup_from_env
 
-db = DB.open URI.new("sqlite3", path: "./gslash.db", query: "foreign_keys=on")
+Kemal.config.extra_options do |opts|
+  opts.on "-d PATH", "--database PATH", "Path to sqlite database (defaults to '#{db_path}')" do |path|
+    db_path = path
+  end
+  opts.on "-c PATH", "--schema PATH", "Path to database schemas (defaults to '#{schema_path}')" do |path|
+    schema_path = path
+  end
+end
+
+Kemal::CLI.new ARGV
+
+db = DB.open URI.new("sqlite3", path: db_path, query: "foreign_keys=on")
 
 def get_uid(db : DB::Database, uname : String) : Int32
   db.query_one("SELECT uid FROM players WHERE uname=(?)", uname, as: {Int32})
@@ -32,7 +45,7 @@ end
   begin
     db.exec "SELECT * FROM #{table} LIMIT 0"
   rescue
-    db.exec File.read("schema/#{table}.sql")
+    db.exec File.read("#{schema_path}/#{table}.sql")
     Log.info { "created table #{table}" }
   end
 end
