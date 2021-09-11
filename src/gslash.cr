@@ -86,7 +86,7 @@ get "/top" do |env|
     count = db.query_one("SELECT COUNT(*) FROM scores", as: {Int64}).to_s
     result = CSV.build do |csv|
       csv.row "count", count
-      db.query "SELECT players.uname, score FROM scores LEFT JOIN players ON scores.player = players.uid ORDER BY score DESC LIMIT 50 OFFSET (?)", from.to_i32 do |row|
+      db.query "SELECT players.uname, max(score) FROM scores LEFT JOIN players ON scores.player = players.uid GROUP BY player ORDER BY score DESC LIMIT 50 OFFSET (?)", from.to_i32 do |row|
         row.each do
           csv.row row.read(String), row.read(Int64) # sqlite returns int64
         end
@@ -96,6 +96,9 @@ get "/top" do |env|
   result
 end
 
-serve_static false
-Kemal.config.powered_by_header = false
+Kemal.config do |cfg|
+  cfg.powered_by_header = false
+  cfg.serve_static = false
+  cfg.app_name = "gslash"
+end
 Kemal.run
