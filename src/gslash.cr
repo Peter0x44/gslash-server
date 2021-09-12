@@ -34,18 +34,25 @@ end
 
 Kemal::CLI.new ARGV
 
+# if path to database doesn't exist, create it
+db_dir = db_path.match(/.*\//).not_nil![0]
+if !Dir.exists? db_dir
+  Dir.mkdir_p db_dir, 0o755
+  Log.info { "created #{db_dir} for database" }
+end
+
 db = DB.open URI.new("sqlite3", path: db_path, query: "foreign_keys=on")
 
 def get_uid(db : DB::Database, uname : String) : Int32
   db.query_one("SELECT uid FROM players WHERE uname=(?)", uname, as: {Int32})
 end
 
-# Check if tables exist, and if not, create them
+# check if tables exist, and if not, create them
 ["players", "scores"].each do |table|
   begin
     db.exec "SELECT * FROM #{table} LIMIT 0"
   rescue
-    db.exec File.read("#{schema_path}/#{table}.sql")
+    db.exec File.read "#{schema_path}/#{table}.sql"
     Log.info { "created table #{table}" }
   end
 end
