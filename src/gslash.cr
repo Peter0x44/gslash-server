@@ -58,7 +58,7 @@ end
 end
 
 before_all do |env|
-  env.response.headers["Source"] = "https://github.com/2secslater/gslash-server.git"
+  env.response.headers["Source"] = {{ "#{`git remote get-url origin`}".chomp }}
 end
 
 post "/submit" do |env|
